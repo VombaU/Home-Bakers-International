@@ -1,0 +1,105 @@
+@page "/recipe/details/{Id:int}"
+@using Frontend.Models
+@using Frontend.Services
+@inject RecipeService RecipeService
+@inject NavigationManager NavigationManager
+
+<div class="container recipe-details">
+    @if (recipe == null)
+    {
+        <div class="loading">Loading...</div>
+    }
+    else
+    {
+        <div class="recipe-header">
+            <h1>@recipe.Title</h1>
+            <div class="recipe-meta">
+                <div class="recipe-rating">
+                    <span class="rating-value">@recipe.Rating.ToString("0.0")</span><div class="stars-container">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= Math.Floor(recipe.Rating))
+                            {
+                                <span class="star filled">★</span>
+                            }
+                            else if (i == Math.Ceiling(recipe.Rating) && recipe.Rating != Math.Round(recipe.Rating))
+                            {
+                                <span class="star half-filled">⯨</span>
+                            }
+                            else
+                            {
+                                <span class="star">☆</span>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="recipe-dates">
+                    <div>Added: @recipe.UploadDate.ToString("MMM dd, yyyy")</div>
+                    @if (recipe.ModifiedDate.HasValue)
+                    {
+                        <div>Modified: @recipe.ModifiedDate.Value.ToString("MMM dd, yyyy")</div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="recipe-content">
+            <div class="recipe-image">
+                <img src="@recipe.ThumbnailUrl" alt="@recipe.Title" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image';" />
+            </div>
+            
+            <div class="recipe-info">
+                <div class="recipe-description">
+                    <h3>Description</h3>
+                    <p>@recipe.Description</p>
+                </div>
+                
+                <div class="recipe-tags">
+                    <div class="tag">
+                        <span class="tag-label">Cuisine:</span>
+                        <span class="cuisine-tag">@recipe.Cuisine</span>
+                    </div>
+                    <div class="tag">
+                        <span class="tag-label">Dough Type:</span>
+                        <span class="dough-tag">@recipe.DoughType</span>
+                    </div>
+                    <div class="tag">
+                        <span class="tag-label">Flour Type:</span>
+                        <span class="flour-tag">@recipe.FlourType</span>
+                    </div>
+                    <div class="tag">
+                        <span class="tag-label">Kneading Method:</span>
+                        <span class="knead-tag">@recipe.KneadingMethod</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="recipe-actions">
+            <button class="btn" @onclick="BackToList">Back to Recipes</button>
+            <button class="btn btn-primary" @onclick="@(() => NavigationManager.NavigateTo("/recipe/edit/" + Id))">Edit Recipe</button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Recipe recipe;
+
+    protected override async Task OnInitializedAsync()
+    {
+        recipe = await RecipeService.GetRecipeByIdAsync(Id);
+        
+        if (recipe == null)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private void BackToList()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+} 

@@ -1,0 +1,167 @@
+@page "/recipes"
+@using Frontend.Models
+@using Frontend.Services
+@inject RecipeService RecipeService
+@inject NavigationManager NavigationManager
+
+<div class="container">
+    <div class="filters">
+        <div class="filter-group">
+            <label for="cuisine">Cuisine:</label>
+            <select id="cuisine" @bind="selectedCuisine" @bind:event="oninput">
+                <option value="">All Cuisines</option>
+                <option value="Turkish">Turkish</option>
+                <option value="Romanian">Romanian</option>
+                <option value="English">English</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="doughType">Dough Type:</label>
+            <select id="doughType" @bind="selectedDoughType" @bind:event="oninput">
+                <option value="">All Dough Types</option>
+                <option value="Sourdough">Sourdough</option>
+                <option value="Pastry">Pastry</option>
+                <option value="Flatbread">Flatbread</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="flourType">Flour Type:</label>
+            <select id="flourType" @bind="selectedFlourType" @bind:event="oninput">
+                <option value="">All Flour Types</option>
+                <option value="All Purpose">All Purpose (000)</option>
+                <option value="Whole Wheat">Whole Wheat (650)</option>
+                <option value="Light Rye">Light Rye (1150)</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="kneadingMethod">Kneading Method:</label>
+            <select id="kneadingMethod" @bind="selectedKneadingMethod" @bind:event="oninput">
+                <option value="">All Methods</option>
+                <option value="Cold Fermentation">Cold Fermentation</option>
+                <option value="Preferment">Preferment</option>
+                <option value="No-Knead">No-Knead</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="sortBy">Sort By:</label>
+            <select id="sortBy" @bind="sortBy" @bind:event="oninput">
+                <option value="">Default</option>
+                <option value="title">Title</option>
+                <option value="rating">Rating</option>
+                <option value="date">Date</option>
+            </select>
+            <button @onclick="ToggleSortDirection">@(ascending ? "↑" : "↓")</button>
+        </div>
+    </div>
+
+    <div class="recipes-grid">
+        @foreach (var recipe in recipes)
+        {
+            <div class="recipe-card @GetRatingClass(recipe.Rating)">
+                <div class="card-content" @onclick="@(() => NavigationManager.NavigateTo("/recipe/details/" + recipe.Id))">
+                    <div class="recipe-thumbnail">
+                        <img src="@recipe.ThumbnailUrl" alt="@recipe.Title" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image';" />
+                    </div>
+                    <div class="recipe-info">
+                        <h3 class="recipe-title">@recipe.Title</h3>
+                        <div class="recipe-rating">
+                            <span class="rating-value">@recipe.Rating.ToString("0.0")</span><div class="stars-container">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= Math.Floor(recipe.Rating))
+                                    {
+                                        <span class="star filled">★</span>
+                                    }
+                                    else if (i == Math.Ceiling(recipe.Rating) && recipe.Rating % 1 != 0)
+                                    {
+                                        <span class="star half-filled">⯨</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="star">☆</span>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <p class="recipe-description">@(recipe.Description.Length > 100 ? recipe.Description.Substring(0, 100) + "..." : recipe.Description)</p>
+                        <div class="recipe-tags">
+                            <span class="cuisine-tag">@recipe.Cuisine</span>
+                            <span class="dough-tag">@recipe.DoughType</span>
+                            <span class="flour-tag">@recipe.FlourType</span>
+                            <span class="knead-tag">@recipe.KneadingMethod</span>
+                        </div>
+                        <div class="recipe-date">
+                            <small>@recipe.UploadDate.ToString("MMM dd, yyyy")</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-primary" @onclick="@(() => NavigationManager.NavigateTo("/recipe/edit/" + recipe.Id))">Edit</button>
+                    <button class="btn btn-danger" @onclick="@(() => DeleteRecipe(recipe))">Delete</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<a href="/recipe/new" class="add-recipe-btn">+</a>
+
+@code {
+    private List<Recipe> recipes = new();
+    private string selectedCuisine;
+    private string selectedDoughType;
+    private string selectedFlourType;
+    private string selectedKneadingMethod;
+    private string sortBy;
+    private bool ascending = true;
+
+    private void NavigateToNewRecipe()
+    {
+        NavigationManager.NavigateTo("/recipes/new");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRecipes();
+    }
+
+    private async Task LoadRecipes()
+    {
+        recipes = await RecipeService.GetFilteredRecipesAsync(
+            selectedCuisine,
+            selectedDoughType,
+            selectedFlourType,
+            selectedKneadingMethod,
+            sortBy,
+            ascending);
+    }
+
+    private async Task EditRecipe(Recipe recipe)
+    {
+        NavigationManager.NavigateTo($"/recipe/edit/{recipe.Id}");
+    }
+
+    private async Task DeleteRecipe(Recipe recipe)
+    {
+        await RecipeService.DeleteRecipeAsync(recipe.Id);
+        await LoadRecipes();
+    }
+
+    private async Task ToggleSortDirection()
+    {
+        ascending = !ascending;
+        await LoadRecipes();
+    }
+
+    private string GetRatingClass(double rating)
+    {
+        if (rating == 5) return "rating-gold";
+        if (rating >= 4) return "rating-silver";
+        if (rating >= 3) return "rating-bronze";
+        return "rating-standard";
+    }
+} 
