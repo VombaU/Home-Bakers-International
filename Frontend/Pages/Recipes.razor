@@ -126,7 +126,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadRecipes();
+        recipes = await RecipeService.GetAllRecipesAsync();
     }
 
     private async Task LoadRecipes()
