@@ -1,0 +1,14 @@
+{
+  "dependencies": [
+    {
+      "name": "drogon",
+      "features": ["mysql"]
+    },
+    "brotli",
+    "trantor",
+    "zlib",
+    "openssl",
+    "jsoncpp",
+    "libmariadb"
+  ]
+}

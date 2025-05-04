@@ -1,0 +1,119 @@
+Package: vcpkg-cmake-config
+Version: 2024-05-23
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 9853ec2204dae287fd029f7cbd69498d95671da22e8b4eee64d76707fe9d298d
+Status: install ok installed
+
+Package: vcpkg-cmake
+Version: 2024-04-23
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 239fa22bfdbad8b80cb7625e21ddfcd01af562e98b7f6ad06650b123cf52cd65
+Status: install ok installed
+
+Package: brotli
+Version: 1.1.0
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 7cba7b99d1ae88d8ea871700fe5787bd23e8904590553a1c35917fe9c63ee83f
+Description: a generic-purpose lossless compression algorithm that compresses data using a combination of a modern variant of the LZ77 algorithm, Huffman coding and 2nd order context modeling.
+Status: install ok installed
+
+Package: zlib
+Version: 1.3.1
+Depends: vcpkg-cmake
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 33aa93985a1cdd7b4712c833e2936c051bd7ef552c0ecaf0cc909886a8e74b35
+Description: A compression library
+Status: install ok installed
+
+Package: vcpkg-cmake-get-vars
+Version: 2024-09-22
+Depends: vcpkg-cmake
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 3927ecdf4b4f2574860dabf9578077d8a97d59d3fc55edb112e8e0b7ebef18e3
+Status: install ok installed
+
+Package: openssl
+Version: 3.4.1
+Depends: vcpkg-cmake, vcpkg-cmake-config, vcpkg-cmake-get-vars
+Architecture: x64-windows
+Multi-Arch: same
+Abi: c255cea86279a5859611ba40079bae5ee8b7e5f2a26170dbcee192a9e382ccba
+Description: OpenSSL is an open source project that provides a robust, commercial-grade, and full-featured toolkit for the Transport Layer Security (TLS) and Secure Sockets Layer (SSL) protocols. It is also a general-purpose cryptography library.
+Status: install ok installed
+
+Package: c-ares
+Version: 1.34.4
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 614476baae9a65240ec884a157e2703a40114c07e379fd5e00d0c294293da109
+Description: A C library for asynchronous DNS requests
+Status: install ok installed
+
+Package: trantor
+Version: 1.5.23
+Depends: c-ares, openssl, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 561ae306af24ad7f0e07deefd55cf6e420d61dcdd7b32e3fdde5fa588ad12722
+Description: A non-blocking I/O cross-platform TCP network library, using C++14
+Status: install ok installed
+
+Package: jsoncpp
+Version: 1.9.6
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: de5d38a955132aad083ca852e243c5a5749e9ed3b69c7857d50c2dd27ae2ac08
+Description: JsonCpp is a C++ library that allows manipulating JSON values, including serialization and deserialization to and from strings. It can also preserve existing comment in unserialization/serialization steps, making it a convenient format to store user input files.
+Status: install ok installed
+
+Package: drogon
+Version: 1.9.10
+Depends: brotli, jsoncpp, trantor, vcpkg-cmake, vcpkg-cmake-config, zlib
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 77b1b80773c7f3e5cf7fffab4826c66e1d72e849dd2387f7ab087e9178e450b9
+Description: A C++14/17 based HTTP web application framework running on Linux/macOS/Unix/Windows
+Status: install ok installed
+
+Package: libmariadb
+Version: 3.4.1
+Depends: libmariadb, vcpkg-cmake, vcpkg-cmake-config, zlib
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 00f6521491346813daf31b1cfb25c870586abf14db4eb7efd011d02fd8c3109f
+Description: MariaDB Connector/C is used to connect C/C++ applications to MariaDB and MySQL databases
+Default-Features: ssl
+Status: install ok installed
+
+Package: libmariadb
+Feature: iconv
+Architecture: x64-windows
+Multi-Arch: same
+Description: Enables character set conversion
+Status: install ok installed
+
+Package: libmariadb
+Feature: schannel
+Architecture: x64-windows
+Multi-Arch: same
+Description: SSL support (Secure Channel)
+Status: install ok installed
+
+Package: libmariadb
+Feature: ssl
+Depends: libmariadb
+Architecture: x64-windows
+Multi-Arch: same
+Description: Default SSL backend
+Status: install ok installed
+
