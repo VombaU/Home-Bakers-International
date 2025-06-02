@@ -1,0 +1,139 @@
+@page "/recipe/new"
+@page "/recipe/edit/{Id:int}"
+@using Frontend.Models
+@using Frontend.Services
+@inject RecipeService RecipeService
+@inject NavigationManager NavigationManager
+
+<div class="container">
+    <h2>@(Id == 0 ? "Add New Recipe" : "Edit Recipe")</h2>
+
+    <EditForm Model="@recipe" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <InputText id="title" @bind-Value="recipe.Title" class="form-control" />
+            <ValidationMessage For="@(() => recipe.Title)" />
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <InputTextArea id="description" @bind-Value="recipe.Description" class="form-control" />
+            <ValidationMessage For="@(() => recipe.Description)" />
+        </div>
+
+        <div class="form-group">
+            <label for="thumbnailUrl">Thumbnail URL:</label>
+            <InputText id="thumbnailUrl" @bind-Value="recipe.ThumbnailUrl" class="form-control" />
+            <ValidationMessage For="@(() => recipe.ThumbnailUrl)" />
+        </div>
+
+        <div class="form-group">
+            <label>Rating:</label>
+            <div class="rating-slider-container" style="width: 100%;">
+                <input type="range" 
+                       min="0" 
+                       max="5" 
+                       step="0.5" 
+                       value="@recipe.Rating" 
+                       @oninput="@(e => SetRating(Convert.ToDouble(e.Value)))" 
+                       class="rating-slider" 
+                       style="width: 100%;" />
+                <div class="rating-value">@recipe.Rating.ToString("0.0") / 5.0</div>
+            </div>
+            <ValidationMessage For="@(() => recipe.Rating)" />
+        </div>
+
+        <div class="form-group">
+            <label for="cuisine">Cuisine:</label>
+            <InputSelect id="cuisine" @bind-Value="recipe.Cuisine" class="form-control">
+                <option value="">Select Cuisine</option>
+                <option value="Turkish">Turkish</option>
+                <option value="Romanian">Romanian</option>
+                <option value="English">English</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => recipe.Cuisine)" />
+        </div>
+
+        <div class="form-group">
+            <label for="doughType">Dough Type:</label>
+            <InputSelect id="doughType" @bind-Value="recipe.DoughType" class="form-control">
+                <option value="">Select Dough Type</option>
+                <option value="Sourdough">Sourdough</option>
+                <option value="Pastry">Pastry</option>
+                <option value="Flatbread">Flatbread</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => recipe.DoughType)" />
+        </div>
+
+        <div class="form-group">
+            <label for="flourType">Flour Type:</label>
+            <InputSelect id="flourType" @bind-Value="recipe.FlourType" class="form-control">
+                <option value="">Select Flour Type</option>
+                <option value="All Purpose">All Purpose (000)</option>
+                <option value="Whole Wheat">Whole Wheat (650)</option>
+                <option value="Light Rye">Light Rye (1150)</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => recipe.FlourType)" />
+        </div>
+
+        <div class="form-group">
+            <label for="kneadingMethod">Kneading Method:</label>
+            <InputSelect id="kneadingMethod" @bind-Value="recipe.KneadingMethod" class="form-control">
+                <option value="">Select Kneading Method</option>
+                <option value="Cold Fermentation">Cold Fermentation</option>
+                <option value="Preferment">Preferment</option>
+                <option value="No-Knead">No-Knead</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => recipe.KneadingMethod)" />
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Recipe</button>
+            <button type="button" @onclick="Cancel" class="btn btn-secondary">Cancel</button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Recipe recipe = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id != 0)
+        {
+            var existingRecipe = await RecipeService.GetRecipeByIdAsync(Id);
+            if (existingRecipe != null)
+            {
+                recipe = existingRecipe;
+            }
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (Id == 0)
+        {
+            await RecipeService.CreateRecipeAsync(recipe);
+        }
+        else
+        {
+            await RecipeService.UpdateRecipeAsync(recipe);
+        }
+        NavigationManager.NavigateTo("/recipes");
+    }
+
+    private void SetRating(double rating)
+    {
+        recipe.Rating = rating;
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/recipes");
+    }
+} 

@@ -1,0 +1,102 @@
+@page "/login"
+@inject NavigationManager NavigationManager
+@inject Frontend.Services.AuthService AuthService
+
+<h3>Login / Register</h3>
+
+<div>
+    <label>Username</label>
+    <input @bind="username" />
+</div>
+<div>
+    <label>Email:</label>
+    <input type="email" @bind="email" />
+</div>
+<div>
+    <label>Password:</label>
+    <input type="password" @bind="password" />
+</div>
+<button @onclick="HandleLogin">Login</button>
+<button @onclick="HandleRegister">Register</button>
+
+@if (showOtpSection)
+{
+    <div class="otp-section">
+        <label>Enter OTP:</label>
+        <input @bind="otp" />
+        <button @onclick="ConfirmOtp">Confirm OTP</button>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p style="color: red;">@errorMessage</p>
+}
+
+@code {
+    private string username;
+    private string email;
+    private string password;
+    private string errorMessage;
+    private string otp;
+    private bool showOtpSection = false;
+
+    private async Task HandleLogin()
+    {
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+        {
+            errorMessage = "Username, email, and password cannot be empty.";
+            return;
+        }
+
+        try
+        {
+            await AuthService.Login(username, email, password);
+            showOtpSection = true;
+        } catch(ArgumentException err)
+        {
+            errorMessage = err.Message;
+            return;
+        }
+    }
+
+    private async Task HandleRegister()
+    {
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+        {
+            errorMessage = "Username, email, and password cannot be empty.";
+            return;
+        }
+
+        try
+        {
+            await AuthService.Register(username, email, password);
+            showOtpSection = true;
+        }
+        catch (ArgumentException err)
+        {
+            errorMessage = err.Message;
+            return;
+        }
+    }
+
+    private async Task ConfirmOtp()
+    {
+        if (string.IsNullOrWhiteSpace(otp))
+        {
+            errorMessage = "Input the OTP cocksucker";
+            return;
+        }
+        try
+        {
+            await AuthService.ConfirmOtp(otp);
+            showOtpSection = false;
+            NavigationManager.NavigateTo("/recipes");
+        }
+        catch (ArgumentException err)
+        {
+            errorMessage = err.Message;
+            return;
+        }
+    }
+} 

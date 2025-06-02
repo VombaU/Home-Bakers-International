@@ -1,0 +1,38 @@
+﻿@namespace Frontend.Layout
+@inherits LayoutComponentBase
+@inject Frontend.Services.AuthService AuthService
+@inject NavigationManager NavManager
+@implements IDisposable
+
+<div class="container">
+    @Body
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        AuthService.OnAuthStateChanged += HandleAuthStateChanged;
+        //RedirectIfNotAuthenticated();
+    }
+
+    private void HandleAuthStateChanged()
+    {
+        RedirectIfNotAuthenticated();
+        StateHasChanged();
+    }
+
+    private void RedirectIfNotAuthenticated()
+    {
+        var currentUri = NavManager.Uri;
+        if (!AuthService.IsAuthenticated && !currentUri.EndsWith("/login"))
+        {
+            NavManager.NavigateTo("/login", forceLoad: true);
+        }
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnAuthStateChanged -= HandleAuthStateChanged;
+    }
+}

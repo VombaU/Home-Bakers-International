@@ -1,0 +1,22 @@
+# --- General ---
+*.log
+
+# --- Visual Studio / Blazor WASM Frontend ---
+Frontend/bin/
+Frontend/obj/
+Frontend/.vs/
+Frontend/*.user
+Frontend/*.suo
+Frontend/*.userosscache
+Frontend/*.sln.docstates
+Frontend/Properties/launchSettings.json
+
+# --- Node/Express Backend ---
+server/node_modules/
+server/npm-debug.log*
+server/yarn-debug.log*
+server/yarn-error.log*
+server/.env
+
+# --- Editor directories ---
+.vscode/
